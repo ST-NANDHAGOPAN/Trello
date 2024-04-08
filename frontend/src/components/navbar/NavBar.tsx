@@ -25,38 +25,10 @@ function NavBar() {
             <ul className="navbar-nav mx-auto set gg  mb-2 mb-lg-0   ">
               <li className="nav-item me-3">
                 <Link className="nav-link" to={"/"}>
-                  Home
-                </Link>
-              </li>
-              <li className="nav-item me-3 ">
-                <Link  className="nav-link" to={"/about"}>
-                  About
-                </Link>
-              </li>
-              <li className="nav-item me-3 ">
-                <Link className="nav-link" to={"/products"}>
-                  Products
-                </Link>
-              </li>
-              <li className="nav-item me-3 ">
-                <Link className="nav-link" to={"/news"}>
-                  News
-                </Link>
-              </li>
-              <li className="nav-item me-3 ">
-                <Link className="nav-link" to={"/contact"}>
-                  Contact
+                  Project1
                 </Link>
               </li>
             </ul>
-            <div className="navbar-nav">
-              <ul className="navbar-nav mx-auto set  mb-2 mb-lg-0 ">
-                <li className="nav-item set">
-                  Logout
-                </li>
-              </ul>
-
-            </div>
           </div>
         </div>
       </nav>
