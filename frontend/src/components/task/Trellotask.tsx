@@ -2,9 +2,16 @@ import React, { useState } from 'react';
 import "../../assets/task.css";
 
 function TrelloTask() {
-    const [columns, setColumns] = useState<Array<{ tasks: { name: string, description: string }[] }>>([]);
+    const [columns, setColumns] = useState<Array<{ name: string, tasks: { name: string }[] }>>([]);
+    const [columnNameInputs, setColumnNameInputs] = useState<string[]>(['']);
     const [taskNameInputs, setTaskNameInputs] = useState<string[]>(['']);
-    const [taskDescriptionInputs, setTaskDescriptionInputs] = useState<string[]>(['']);
+    const [showTaskInputs, setShowTaskInputs] = useState<boolean[]>([]);
+
+    const handleColumnNameChange = (event: React.ChangeEvent<HTMLInputElement>, columnIndex: number) => {
+        const newInputs = [...columnNameInputs];
+        newInputs[columnIndex] = event.target.value;
+        setColumnNameInputs(newInputs);
+    };
 
     const handleTaskNameChange = (event: React.ChangeEvent<HTMLInputElement>, columnIndex: number) => {
         const newInputs = [...taskNameInputs];
@@ -12,10 +19,27 @@ function TrelloTask() {
         setTaskNameInputs(newInputs);
     };
 
-    const handleTaskDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>, columnIndex: number) => {
-        const newInputs = [...taskDescriptionInputs];
-        newInputs[columnIndex] = event.target.value;
-        setTaskDescriptionInputs(newInputs);
+    const toggleTaskInputs = (columnIndex: number) => {
+        const newShowTaskInputs = [...showTaskInputs];
+        newShowTaskInputs[columnIndex] = true;
+        setShowTaskInputs(newShowTaskInputs);
+    };
+
+    const handleAddTask = (columnIndex: number) => {
+        const newTaskName = taskNameInputs[columnIndex].trim();
+        if (newTaskName !== '') {
+            const updatedColumns = [...columns];
+            updatedColumns[columnIndex].tasks.push({ name: newTaskName });
+            setColumns(updatedColumns);
+            setTaskNameInputs([...taskNameInputs.slice(0, columnIndex), '', ...taskNameInputs.slice(columnIndex + 1)]);
+            setShowTaskInputs([...showTaskInputs.slice(0, columnIndex), false, ...showTaskInputs.slice(columnIndex + 1)]);
+        }
+    };
+
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>, columnIndex: number) => {
+        if (event.key === 'Enter') {
+            handleAddTask(columnIndex);
+        }
     };
 
     const deleteTask = (columnIndex: number, taskIndex: number) => {
@@ -25,55 +49,62 @@ function TrelloTask() {
     };
 
     const addColumn = () => {
-        setColumns([...columns, { tasks: [] }]);
-        setTaskNameInputs([...taskNameInputs, '']);
-        setTaskDescriptionInputs([...taskDescriptionInputs, '']);
-    };
-
-    const addTaskToColumn = (columnIndex: number) => {
-        const updatedColumns = [...columns];
-        updatedColumns[columnIndex].tasks.push({ name: taskNameInputs[columnIndex], description: taskDescriptionInputs[columnIndex] });
-        setColumns(updatedColumns);
-        setTaskNameInputs([...taskNameInputs.slice(0, columnIndex), '', ...taskNameInputs.slice(columnIndex + 1)]);
-        setTaskDescriptionInputs([...taskDescriptionInputs.slice(0, columnIndex), '', ...taskDescriptionInputs.slice(columnIndex + 1)]);
+        const newColumnName = columnNameInputs[columnNameInputs.length - 1];
+        if (newColumnName.trim() !== '') {
+            setColumns([...columns, { name: newColumnName.trim(), tasks: [] }]);
+            setColumnNameInputs([...columnNameInputs, '']);
+            setTaskNameInputs([...taskNameInputs, '']);
+            setShowTaskInputs([...showTaskInputs, false]);
+        }
     };
 
     return (
         <div className="container mt-4">
-            <button className="btn btn-primary mb-3 " onClick={addColumn}>Add Column</button>
+            <div className="row mb-3 addcolumn">
+                <div className="col">
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Column Name"
+                        value={columnNameInputs[columnNameInputs.length - 1]}
+                        onChange={(event) => handleColumnNameChange(event, columnNameInputs.length - 1)}
+                    />
+                </div>
+                <div className="col-auto">
+                    <button className="btn btn-primary" onClick={addColumn}>Add Column</button>
+                </div>
+            </div>
             <div className="card-columns d-flex">
                 {columns.map((column, columnIndex) => (
                     <div className="card d" key={columnIndex}>
                         <div className="card-body">
-                            <h5 className="card-title">Column {columnIndex + 1}</h5>
+                            <h5 className="card-title">{column.name}</h5>
                             {column.tasks.map((task, taskIndex) => (
                                 <div className="card mb-2" key={taskIndex}>
                                     <div className="card-body">
                                         <h5 className="card-title">{task.name}</h5>
-                                        <p className="card-text">{task.description}</p>
                                         <button className="btn btn-danger" onClick={() => deleteTask(columnIndex, taskIndex)}>Delete</button>
                                     </div>
                                 </div>
                             ))}
-                            <div className="mb-3">
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    placeholder="Task Name"
-                                    value={taskNameInputs[columnIndex]}
-                                    onChange={(event) => handleTaskNameChange(event, columnIndex)}
-                                />
-                            </div>
-                            <div className="mb-3">
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    placeholder="Task Description"
-                                    value={taskDescriptionInputs[columnIndex]}
-                                    onChange={(event) => handleTaskDescriptionChange(event, columnIndex)}
-                                />
-                            </div>
-                            <button className="btn btn-primary mb-3" onClick={() => addTaskToColumn(columnIndex)}>Add Task</button>
+                            {showTaskInputs[columnIndex] && (
+                                <>
+                                    <div className="mb-3">
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Task Name"
+                                            value={taskNameInputs[columnIndex]}
+                                            onChange={(event) => handleTaskNameChange(event, columnIndex)}
+                                            onKeyDown={(event) => handleKeyDown(event, columnIndex)}
+                                        />
+                                    </div>
+                                    <button className="btn btn-primary mb-3" onClick={() => handleAddTask(columnIndex)}>Add Task</button>
+                                </>
+                            )}
+                            {!showTaskInputs[columnIndex] && (
+                                <button className="btn btn-primary mb-3" onClick={() => toggleTaskInputs(columnIndex)}>Add Task</button>
+                            )}
                         </div>
                     </div>
                 ))}
