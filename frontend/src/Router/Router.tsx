@@ -1,9 +1,15 @@
-import React from 'react'
 
-function Router() {
-  return (
-    <div>Router</div>
-  )
-}
+import { lazy } from 'react';
+import Loadable from '../loadable/Loadable';
 
-export default Router
+const TrelloTask = Loadable(lazy(() => import('../components/task/Trellotask')));
+
+const Router = [
+  {
+    path: '/',
+    element: <TrelloTask />,
+  },
+  
+];
+
+export default Router;

@@ -1,0 +1,40 @@
+/* -----------------------------------------------------------------------------
+
+#  Navbar
+
+----------------------------------------------------------------------------- */
+.Navbar {
+    width: 100%;
+  }
+  .navbartogglericon {
+    background-color: #f28123; 
+    border: 1px solid #f28123; 
+  }
+  
+  .set .nav-link {
+    font-weight: 700 !important;
+    color: white !important;
+  }
+  .set .nav-link::after {
+    content: " ";
+    display: block;
+    height: 2px;
+  }
+  .set .nav-link:hover,
+  .set .nav-link.active {
+    color: #f28123 !important;
+  }
+  .set .nav-link:hover::after,
+  .gg .nav-link.active::after {
+    content: " ";
+    display: block;
+    background-color: #f28123;
+    height: 2px;
+    transition: all 0.7s ease-in-out;
+    transform: scaleX(0);
+  }
+  .set .nav-link:hover,
+  .set .nav-link.active::after {
+    transform: scaleX(1);
+  }
+  
